@@ -60,7 +60,7 @@ python tests/test_osm_and_roads.py                     # tests for OSM import / 
 python tests/test_geohealth.py                         # tests for the Geo-Health module
 ```
 
-You can also skip the command and click **Download / refresh from OpenStreetMap** in the app's sidebar.
+You can also click **Download / refresh from OpenStreetMap** in the app's sidebar when running locally. For a deployed app see 'Deploying' below.
 
 ## Files
 
@@ -102,6 +102,23 @@ Your own data still works: build `data/stores_raw.csv` (id, name, address_new, o
 | `access_type` | `mat_tien` (street frontage) or `hem` (alley). Alleys get an extra night penalty. |
 | `format` | Store format (Standard, Flagship, 24/7...). |
 
+## Deploying (Streamlit Community Cloud / GitHub)
+
+**Do not rely on the in-app "Download from OpenStreetMap" button in the cloud.** Public Overpass servers often refuse or
+rate-limit connections from cloud hosts (you will see `Connection refused` / `Read timed out`). Instead, generate the store
+file once on your own computer and commit it:
+
+1. `python osm_stores.py` (creates `data/stores_hcmc_osm.csv`). Open it and check it has rows and real coordinates.
+   - If this also fails on your machine: run `python osm_stores.py --print-query`, paste the query into https://overpass-turbo.eu,
+     press Run, then Export -> **raw OSM data** -> download `.json`, and run `python osm_stores.py --from-json export.json`.
+2. Make sure `data/stores_hcmc_osm.csv` and `data/stores_hcmc_demo.csv` are NOT ignored by `.gitignore` (no `*.csv` or `data/` line).
+3. Commit and push both files (`git add data/*.csv && git commit -m "add store data" && git push`).
+4. In Streamlit Cloud open your app -> menu -> **Reboot app** (it also redeploys automatically on every push).
+5. Check: the sidebar shows "Real stores (OpenStreetMap)" with no error, and the Data tab lists stores with an `osm_url` column.
+
+Refresh the data now and then by repeating steps 1-4 locally. The repository must also contain `app.py, core.py, viz.py, osm_stores.py,
+geohealth.py, requirements.txt`. The app still works if the file is missing: it falls back to the demo data and shows a notice.
+
 ## Distances: how "real" are they?
 
 - **Real roads (OSRM)**: road time and road km come from OpenStreetMap's road network via the public demo server `router.project-osrm.org`. Caveats: it only has a *car* profile (motorbikes use the same graph) and **no live traffic**, so the app multiplies times by its own time-of-day factor and adds hotspot surcharges. For true traffic-aware times, write a Router that calls Google Distance Matrix / Goong / TomTom with `departure_time` (interface: `minutes(a, b, mode, minute)`, `km(a, b)`, `prefetch(points, mode)`, `polyline(points, mode)` in `core.py`). The public demo server is for light use only; self-host OSRM for heavy use.
@@ -125,7 +142,7 @@ Not in the app: per-store night revenue and operating cost (staff, security, ele
 
 ## What has been tested
 
-- `tests/test_osm_and_roads.py` (12 tests, offline, network mocked): opening-hours parsing, OSM element conversion and de-duplication, CSV round-trip into `core.load_stores`, Overpass mirror fallback, OSRM real-km handling, road-factor calibration.
+- `tests/test_osm_and_roads.py` (15 tests, offline, network mocked): opening-hours parsing, OSM element conversion and de-duplication, CSV round-trip into `core.load_stores`, Overpass mirror fallback and time budget, manual JSON import, OSRM real-km handling, road-factor calibration.
 - `tests/test_geohealth.py` (19 tests, offline): level boundaries, colour mapping, hotspot/time-of-day/scenario behaviour, live-AQI parsing and interpolation (mocked), hazard assessment, basket merge, stock logic, store ranking, recommendation text.
 - `app.py` (including the Geo-Health tab: layers, click-to-locate, live AQI success/failure, landmark mode, clean area) was smoke-run through 16 scenarios (real/demo data, offline/online router with fallback, car, night, urgency high, mid-trip stop, calibration button) using Streamlit/Folium stubs to catch logic errors.
 - **Not verified**: live calls to Overpass, OSRM, Open-Meteo and the OSM tile server (no internet in the build environment), and the real browser rendering of the maps (heat image overlay, click-to-locate). Please run it once and report anything odd.

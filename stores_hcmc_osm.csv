@@ -1,0 +1,50 @@
+﻿id,name,lat,lng,open_time,close_time,is_24h,address_new,ward_new,area,car_parking,oneway_street,access_type,format,is_demo,hours_source,osm_url
+osm-node-10768400639,Pharmacity,10.721857,106.703721,07:30,22:00,False,,,,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/10768400639
+osm-node-10754080555,Pharmacity,10.729351,106.727009,07:30,22:00,False,,,,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/10754080555
+osm-node-12803901836,Pharmacity,10.741992,106.623588,07:30,22:00,False,,,,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/12803901836
+osm-node-6786271972,Pharmacity,10.745379,106.70634,07:30,22:00,False,Đường số 15,,Đường số 15,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/6786271972
+osm-node-9586881866,Pharmacity,10.745624,106.699182,07:30,22:00,False,,,,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/9586881866
+osm-node-8100983468,Nhà Thuốc Pharmacity,10.748196,106.681743,07:30,22:00,False,,,,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/8100983468
+osm-node-12803901823,Nhà Thuốc Pharmacity,10.748558,106.618371,07:30,22:00,False,,,,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/12803901823
+osm-node-6770462388,Pharmacity,10.748864,106.715932,07:30,22:00,False,Đường Lâm Văn Bền,,Đường Lâm Văn Bền,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/6770462388
+osm-way-1527620025,Pharmacity,10.755467,106.67662,07:30,22:00,False,412-414 Đường Phan Văn Trị,,Đường Phan Văn Trị,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/way/1527620025
+osm-node-12307254636,Pharmacity,10.756167,106.703818,07:30,22:00,False,,,,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/12307254636
+osm-node-6773227022,Pharmacity,10.757966,106.710582,07:30,22:00,False,Đường Xóm Chiếu,,Đường Xóm Chiếu,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/6773227022
+osm-node-6773125657,Pharmacity,10.76097,106.706455,07:30,22:00,False,Đường Vĩnh Khánh,,Đường Vĩnh Khánh,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/6773125657
+osm-way-1460675590,Pharmacity,10.761626,106.675127,07:30,22:00,False,,,,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/way/1460675590
+osm-node-11055959706,Pharmacity,10.762692,106.698768,06:00,23:30,False,,,,False,False,mat_tien,Standard,False,osm,https://www.openstreetmap.org/node/11055959706
+osm-node-5598915259,Nhà Thuốc Pharmacity,10.763146,106.674455,07:30,22:00,False,,,,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/5598915259
+osm-way-1458767988,Pharmacity,10.763465,106.677606,07:30,22:00,False,,,,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/way/1458767988
+osm-node-6315671591,Nhà Thuốc Pharmacity,10.763675,106.695608,07:30,22:00,False,Đường Cô Giang,,Đường Cô Giang,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/6315671591
+osm-node-6778342899,Nhà Thuốc Pharmacity,10.763971,106.669004,07:30,22:00,False,Đường Vĩnh Viễn,,Đường Vĩnh Viễn,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/6778342899
+osm-node-9761192381,Pharmacity,10.767943,106.660538,00:00,24:00,True,"666/46 Hẻm 666 Đường 3 Tháng 2, phường 14, Thành phố Hồ Chí Minh",phường 14,phường 14,False,False,hem,24/7,False,osm,https://www.openstreetmap.org/node/9761192381
+osm-node-4559392591,Pharmacity,10.768945,106.694046,07:30,22:00,False,Hẻm 28 Bùi Viện,,Hẻm 28 Bùi Viện,False,False,hem,Standard,False,assumed,https://www.openstreetmap.org/node/4559392591
+osm-node-6794069413,Pharmacity,10.769249,106.678257,07:30,22:00,False,Đường Nguyễn Thiện Thuật,,Đường Nguyễn Thiện Thuật,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/6794069413
+osm-node-6712833976,Nhà Thuốc Pharmacity,10.775754,106.633624,07:30,22:00,False,Đường Lũy Bán Bích,,Đường Lũy Bán Bích,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/6712833976
+osm-node-9587204861,Pharmacity,10.776992,106.756537,07:30,22:00,False,,,,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/9587204861
+osm-node-12351219263,Pharmacity,10.778474,106.745906,07:30,22:00,False,,,,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/12351219263
+osm-way-1153472356,Pharmacity,10.78089,106.69578,07:30,22:00,False,,,,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/way/1153472356
+osm-node-7101615185,Pharmacity,10.784153,106.696888,07:30,22:00,False,,,,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/7101615185
+osm-node-11562660469,Pharmacity,10.790069,106.661342,07:30,22:00,False,207 Phạm Văn Hai,,Phạm Văn Hai,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/11562660469
+osm-node-12376261742,Pharmacity,10.791715,106.667344,07:30,22:00,False,,,,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/12376261742
+osm-node-13482133482,Pharmacity,10.793962,106.721392,07:30,22:00,False,,,,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/13482133482
+osm-way-1562147320,Pharmacity,10.800088,106.688943,07:30,22:00,False,,,,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/way/1562147320
+osm-node-10259377068,Pharmacity,10.802426,106.738096,07:30,22:00,False,"10 Thảo Điền, Phường Thảo Điền, Thành Phố Hồ Chí Minh",Phường Thảo Điền,Phường Thảo Điền,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/10259377068
+osm-node-11162919537,Pharmacity,10.802531,106.73825,07:30,22:00,False,,,,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/11162919537
+osm-node-11164318329,Pharmacity,10.80849,106.733105,07:30,22:00,False,"2 Trúc Đường, phường Thảo Điền, HCMC",phường Thảo Điền,phường Thảo Điền,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/11164318329
+osm-node-7916777115,Nhà Thuốc Pharmacity,10.813749,106.697509,07:30,22:00,False,"284A Đường Nơ Trang Long, Phường 12, TP Hồ Chí Minh",Phường 12,Phường 12,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/7916777115
+osm-node-4991619470,Pharmacity,10.826367,106.761812,07:30,22:00,False,78-80A Đường Nam Hoà,,Đường Nam Hoà,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/4991619470
+osm-node-6772848754,Pharmacity,10.838378,106.680101,07:30,22:00,False,Đường Lê Đức Thọ,,Đường Lê Đức Thọ,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/6772848754
+osm-node-6790870477,Pharmacity,10.839792,106.657575,07:30,22:00,False,Đường Lê Văn Thọ,,Đường Lê Văn Thọ,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/6790870477
+osm-node-6791481639,Pharmacity,10.840507,106.664892,07:30,22:00,False,Đường Thống Nhất,,Đường Thống Nhất,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/6791481639
+osm-node-11811170376,Pharmacity,10.842542,106.828428,07:30,22:00,False,,,,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/11811170376
+osm-node-6751316502,Nhà Thuốc Tây Pharmacity,10.843236,106.652259,07:30,22:00,False,Hẻm 248 Đường số 10,,Hẻm 248 Đường số 10,False,False,hem,Standard,False,assumed,https://www.openstreetmap.org/node/6751316502
+osm-node-6758069582,Pharmacity,10.84964,106.665169,07:00,23:30,False,"827 Đường Lê Đức Thọ, Thành phố Hồ Chí Minh",,Đường Lê Đức Thọ,False,False,mat_tien,Standard,False,osm,https://www.openstreetmap.org/node/6758069582
+osm-node-4965375504,Pharmacity,10.852541,106.752801,07:30,22:00,False,86,,,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/4965375504
+osm-node-10215649393,Pharmacity,10.854308,106.76956,07:30,22:00,False,191 Hoàng Diệu 2,,Hoàng Diệu 2,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/10215649393
+osm-node-10215649391,Pharmacity,10.856377,106.765991,07:30,22:00,False,,,,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/10215649391
+osm-node-10215649360,Pharmacity,10.863334,106.761003,07:30,22:00,False,,,,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/10215649360
+osm-node-9355497764,Pharmacity,10.870197,106.755711,07:30,22:00,False,"98 Đào Trinh Nhất, An Bình, Dĩ An",An Bình,An Bình,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/9355497764
+osm-node-9355497765,Pharmacity,10.871648,106.758113,07:30,22:00,False,"95 Đường Lê Trọng Tấn, An Bình, Bình Dương",An Bình,An Bình,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/9355497765
+osm-node-10292275620,Pharmacity,10.87458,106.750293,07:30,22:00,False,,,,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/10292275620
+osm-node-10303285247,Pharmacity,10.889018,106.775755,07:30,22:00,False,,,,False,False,mat_tien,Standard,False,assumed,https://www.openstreetmap.org/node/10303285247

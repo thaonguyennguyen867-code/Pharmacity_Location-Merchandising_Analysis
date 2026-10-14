@@ -100,18 +100,54 @@ class _FakeSession:
 
 def test_fetch_falls_back_to_second_mirror():
     sess = _FakeSession([_FakeResp({}, fail=True), _FakeResp({"elements": ELEMENTS})])
-    els = osm.fetch_elements(session=sess)
+    els = osm.fetch_elements(urls=["https://a.test/x", "https://b.test/x"], session=sess)
     assert len(els) == len(ELEMENTS) and len(sess.calls) == 2
 
 
 def test_fetch_raises_when_all_mirrors_fail():
     sess = _FakeSession([_FakeResp({}, fail=True), _FakeResp({}, fail=True)])
     try:
-        osm.fetch_elements(session=sess)
+        osm.fetch_elements(urls=["https://a.test/x", "https://b.test/x"], session=sess)
     except RuntimeError as e:
-        assert "unreachable" in str(e)
+        assert "unreachable" in str(e) and "a.test" in str(e) and "b.test" in str(e)
     else:
         raise AssertionError("expected RuntimeError")
+
+
+def test_query_uses_indexed_tags_and_bbox():
+    q = osm.build_query((10.6, 106.5, 10.9, 106.9))
+    assert q.count("pharmacity") == 9 and "(10.6,106.5,10.9,106.9)" in q
+    assert all(line.strip().startswith("nwr[") for line in q.splitlines() if "pharmacity" in line)
+
+
+def test_deadline_stops_trying_more_mirrors():
+    class Slow(_FakeSession):
+        def post(self, url, **kw):
+            self.calls.append(url)
+            raise TimeoutError("slow")
+    sess = Slow([])
+    try:
+        osm.fetch_elements(urls=[f"https://m{i}.test/x" for i in range(5)], session=sess, deadline=-1)
+    except RuntimeError as e:
+        assert "time budget" in str(e)
+    assert len(sess.calls) == 1            # first mirror is always tried, then the budget stops the rest
+
+
+def test_from_json_roundtrip(tmp_path=None):
+    import json, tempfile
+    d = Path(tempfile.mkdtemp())
+    (d / "export.json").write_text(json.dumps({"elements": ELEMENTS}), encoding="utf-8")
+    out = d / "stores.csv"
+    assert osm.main(["--from-json", str(d / "export.json"), "--out", str(out)]) == 0
+    stores, warns = core.load_stores(out)
+    assert len(stores) == 2 and warns == []
+    (d / "geo.json").write_text(json.dumps({"type": "FeatureCollection", "features": []}), encoding="utf-8")
+    try:
+        osm.elements_from_json_file(d / "geo.json")
+    except ValueError as e:
+        assert "raw OSM data" in str(e)
+    else:
+        raise AssertionError("expected ValueError for GeoJSON")
 
 
 # ---------------------------------------------------------------- real-road distances (OSRM mocked)

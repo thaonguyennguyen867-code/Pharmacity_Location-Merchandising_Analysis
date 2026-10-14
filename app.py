@@ -488,7 +488,11 @@ def main():
                     try:
                         fresh = osm_stores.refresh(OSM_CSV)
                     except Exception as e:  # noqa: BLE001
-                        st.error(f"Could not download: {e}")
+                        st.error("Could not reach the OpenStreetMap (Overpass) servers from where this app runs. "
+                                 "Cloud hosts are often blocked. Generate `data/stores_hcmc_osm.csv` on your own computer "
+                                 "(`python osm_stores.py`) and commit it to the repository.")
+                        with st.expander("Technical details"):
+                            st.code(str(e))
                     else:
                         st.cache_data.clear()
                         st.success(f"Saved {len(fresh)} real stores to data/{OSM_CSV.name}")
@@ -509,15 +513,20 @@ def main():
         if not OSM_CSV.exists() and not st.session_state.get("osm_autotried"):
             # first run with no data file: try to download the real stores automatically (once per session)
             st.session_state["osm_autotried"] = True
-            with st.spinner("First run: downloading real Pharmacity stores from OpenStreetMap…"):
+            with st.spinner("First run: downloading real Pharmacity stores from OpenStreetMap (up to 30 s)…"):
                 try:
-                    osm_stores.refresh(OSM_CSV)
+                    osm_stores.refresh(OSM_CSV, deadline=30)
                 except Exception as e:  # noqa: BLE001
-                    st.sidebar.error(f"Automatic download failed: {e}")
+                    st.sidebar.warning("Automatic download failed (the Overpass servers may block this host). "
+                                       "Using the bundled demo data instead. Fix: commit `data/stores_hcmc_osm.csv` "
+                                       "to the repository (see README, 'Deploying').")
+                    with st.sidebar.expander("Technical details"):
+                        st.code(str(e))
         if OSM_CSV.exists():
             stores, warns = load_csv(str(OSM_CSV), OSM_CSV.stat().st_mtime)
         else:
-            st.sidebar.info("No real-store file yet. Click 'Download / refresh from OpenStreetMap' above (needs internet).")
+            st.sidebar.info("No real-store file (`data/stores_hcmc_osm.csv`) found, so demo data is shown. "
+                            "Click 'Download / refresh from OpenStreetMap' above, or run `python osm_stores.py` and commit the CSV.")
     elif upload is not None:
         try:
             stores, warns = core.load_stores(io.BytesIO(upload.getvalue()))

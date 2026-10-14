@@ -6,6 +6,14 @@ Usage (needs internet):
     python osm_stores.py                              # -> data/stores_hcmc_osm.csv
     python osm_stores.py --bbox 10.62,106.52,10.95,106.90 --out data/my_stores.csv
 
+If the Overpass servers refuse your connection (common from cloud hosts), do it by hand:
+    python osm_stores.py --print-query                # copy the query into https://overpass-turbo.eu and run it
+    #   Export -> "raw OSM data" -> download as .json, then:
+    python osm_stores.py --from-json export.json      # -> data/stores_hcmc_osm.csv
+
+For a deployed app (Streamlit Cloud etc.) generate the CSV once and COMMIT it to the repository,
+so the deployed app never needs to call Overpass at runtime.
+
 What comes from OpenStreetMap (real):   name, lat/lng, opening_hours (if the mapper added it), address tags.
 What is NOT in OpenStreetMap (assumed): car parking, one-way street, 24/7 status when opening_hours is missing.
 Those columns are filled with clearly-marked defaults; edit the CSV (or survey) for the ones you care about.
@@ -14,15 +22,20 @@ Columns added for transparency: `hours_source` ("osm" or "assumed") and `osm_url
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
+import time
 from pathlib import Path
 
 import pandas as pd
 import requests
 
-OVERPASS_URLS = [
+OVERPASS_URLS = [  # public mirrors, tried in order
     "https://overpass-api.de/api/interpreter",
+    "https://lz4.overpass-api.de/api/interpreter",
+    "https://z.overpass-api.de/api/interpreter",
+    "https://overpass.private.coffee/api/interpreter",
     "https://overpass.kumi.systems/api/interpreter",
 ]
 # (south, west, north, east) - HCMC urban core. Widen it if you want the outer districts too.
@@ -33,31 +46,53 @@ USER_AGENT = "pharmacity-hcmc-academic-demo/1.0 (student project)"
 _RANGE = re.compile(r"(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})")
 
 
-def build_query(bbox=DEFAULT_BBOX, timeout: int = 90) -> str:
+def build_query(bbox=DEFAULT_BBOX, timeout: int = 40) -> str:
+    """Each statement starts from an indexed tag (amenity/healthcare/shop), so it is fast even on busy servers."""
     s, w, n, e = bbox
     box = f"({s},{w},{n},{e})"
-    return (
-        f"[out:json][timeout:{timeout}];\n(\n"
-        f'  nwr["name"~"pharmacity",i]{box};\n'
-        f'  nwr["brand"~"pharmacity",i]{box};\n'
-        f'  nwr["operator"~"pharmacity",i]{box};\n'
-        ");\nout center tags;"
-    )
+    stmts = [
+        f'  nwr["{k}"="{v}"]["{key}"~"pharmacity",i]{box};'
+        for k, v in (("amenity", "pharmacy"), ("healthcare", "pharmacy"), ("shop", "chemist"))
+        for key in ("name", "brand", "operator")
+    ]
+    return f"[out:json][timeout:{timeout}];\n(\n" + "\n".join(stmts) + "\n);\nout center tags;"
 
 
-def fetch_elements(bbox=DEFAULT_BBOX, urls=None, timeout: int = 90, session=None) -> list[dict]:
-    """POST the query to Overpass mirrors until one answers. Raises RuntimeError if all fail."""
+def _short(exc: Exception) -> str:
+    return f"{type(exc).__name__}: {str(exc)[:80]}"
+
+
+def fetch_elements(bbox=DEFAULT_BBOX, urls=None, timeout: int = 40, session=None, deadline: float = 120.0) -> list[dict]:
+    """POST the query to Overpass mirrors until one answers.
+
+    `deadline` is the total time budget in seconds (no new mirror is tried after it is used up).
+    Raises RuntimeError("Overpass API unreachable -> ...") if every mirror fails.
+    """
     sess = session or requests
+    t0 = time.monotonic()
     errors = []
     for url in urls or OVERPASS_URLS:
+        if errors and time.monotonic() - t0 > deadline:
+            errors.append("stopped: time budget used up")
+            break
+        host = url.split("/")[2] if "//" in url else url
         try:
             r = sess.post(url, data={"data": build_query(bbox, timeout)}, headers={"User-Agent": USER_AGENT},
-                          timeout=timeout + 15)
+                          timeout=(10, timeout + 10))
             r.raise_for_status()
             return r.json().get("elements", [])
         except Exception as exc:  # noqa: BLE001
-            errors.append(f"{url}: {exc}")
+            errors.append(f"{host} {_short(exc)}")
     raise RuntimeError("Overpass API unreachable -> " + " | ".join(errors))
+
+
+def elements_from_json_file(path: str | Path) -> list[dict]:
+    """Read a raw Overpass JSON export (e.g. saved from overpass-turbo.eu: Export -> raw OSM data)."""
+    js = json.loads(Path(path).read_text(encoding="utf-8"))
+    if isinstance(js, dict) and "elements" in js:
+        return js["elements"]
+    raise ValueError("This file has no 'elements' list. In overpass-turbo choose Export -> 'raw OSM data' (JSON), "
+                     "not GeoJSON.")
 
 
 def parse_opening_hours(value: str | None) -> tuple[str, str, bool, str]:
@@ -156,11 +191,13 @@ def elements_to_dataframe(elements: list[dict]) -> pd.DataFrame:
     return pd.DataFrame(rows, columns=cols).sort_values(["lat", "lng"]).reset_index(drop=True)
 
 
-def refresh(out_path: str | Path, bbox=DEFAULT_BBOX, session=None) -> pd.DataFrame:
-    """Download -> convert -> write CSV (UTF-8 with BOM so Excel shows Vietnamese correctly). Returns the table."""
-    df = elements_to_dataframe(fetch_elements(bbox, session=session))
+def refresh(out_path: str | Path, bbox=DEFAULT_BBOX, session=None, deadline: float = 120.0,
+            elements: list[dict] | None = None) -> pd.DataFrame:
+    """Download (or take `elements`) -> convert -> write CSV (UTF-8 with BOM so Excel shows Vietnamese). Returns the table."""
+    els = elements if elements is not None else fetch_elements(bbox, session=session, deadline=deadline)
+    df = elements_to_dataframe(els)
     if df.empty:
-        raise RuntimeError("OpenStreetMap returned no Pharmacity stores inside this bounding box.")
+        raise RuntimeError("No Pharmacity stores found in this data / bounding box.")
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(out, index=False, encoding="utf-8-sig")
@@ -171,12 +208,23 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Download real Pharmacity stores from OpenStreetMap.")
     ap.add_argument("--bbox", default=",".join(map(str, DEFAULT_BBOX)), help="south,west,north,east")
     ap.add_argument("--out", default="data/stores_hcmc_osm.csv")
+    ap.add_argument("--from-json", help="convert a raw Overpass JSON export instead of downloading")
+    ap.add_argument("--print-query", action="store_true", help="print the Overpass query (for overpass-turbo.eu) and exit")
     a = ap.parse_args(argv)
     bbox = tuple(float(x) for x in a.bbox.split(","))
     if len(bbox) != 4:
         print("--bbox needs 4 numbers: south,west,north,east", file=sys.stderr)
         return 2
-    df = refresh(a.out, bbox)
+    if a.print_query:
+        print(build_query(bbox))
+        return 0
+    try:
+        df = refresh(a.out, bbox, elements=elements_from_json_file(a.from_json) if a.from_json else None)
+    except Exception as e:  # noqa: BLE001
+        print(f"ERROR: {e}", file=sys.stderr)
+        print("Tip: use  python osm_stores.py --print-query  , run it on https://overpass-turbo.eu , export raw JSON, then "
+              "python osm_stores.py --from-json export.json", file=sys.stderr)
+        return 1
     n_osm = int((df["hours_source"] == "osm").sum())
     print(f"Saved {len(df)} stores to {a.out}")
     print(f"  24/7: {int(df['is_24h'].sum())} | opening hours from OSM: {n_osm} | assumed "
